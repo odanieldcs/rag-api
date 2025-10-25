@@ -1,0 +1,13 @@
+services:
+  qdrant:
+    container_name: rag-vector-store_2
+    image: qdrant/qdrant
+    restart: always
+    platform: linux/amd64 # Apple Silicon, M1, M2...
+    ports:
+      - 6333:6333
+    volumes:
+      - ./data/qdrant:/qdrant/storage
+
+volumes:
+  tmp_vector_store:

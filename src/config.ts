@@ -1,0 +1,21 @@
+import dotenv from "dotenv";
+
+dotenv.config();
+
+export const config = {
+	openai: {
+		// biome-ignore lint/style/noNonNullAssertion: We ensure this variable is set below
+		apiKey: process.env.OPENAI_API_KEY!,
+	},
+	qdrant: {
+		url: process.env.QDRANT_URL || "http://localhost:6333",
+		collectionName: process.env.QDRANT_COLLECTION_NAME || "documents",
+	},
+	server: {
+		port: process.env.SERVER_PORT || "3000",
+	},
+} as const;
+
+if (!config.openai.apiKey) {
+	throw new Error("OPENAI_API_KEY is not set in environment variables");
+}
