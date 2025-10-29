@@ -15,3 +15,26 @@ export interface DocumentChunk {
 		uploadedAt: string;
 	};
 }
+
+export interface QueryRequest {
+	question: string;
+	topK: number;
+}
+
+export interface SearchResponse {
+	id: string;
+	text: string;
+	score: number;
+	metadata: {
+		documentId: string;
+		fileName: string;
+		chunkIndex: number;
+		page?: number;
+	};
+}
+
+export interface QueryResponse {
+	question: string;
+	results: SearchResponse[];
+	retrievedChunks: number;
+}
