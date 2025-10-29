@@ -16,12 +16,16 @@
     "@qdrant/js-client-rest": "^1.15.1",
     "dotenv": "^16.6.1",
     "express": "^5.1.0",
-    "pdf-parse": "^1.1.1"
+    "multer": "^2.0.2",
+    "pdf-parse": "^1.1.1",
+    "uuid": "^13.0.0"
   },
   "devDependencies": {
     "@types/express": "^5.0.4",
+    "@types/multer": "^2.0.0",
     "@types/node": "^24.9.1",
     "@types/pdf-parse": "^1.1.5",
+    "@types/uuid": "^10.0.0",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3"
   }
