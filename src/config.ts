@@ -14,6 +14,9 @@ export const config = {
 	server: {
 		port: process.env.SERVER_PORT || "3000",
 	},
+	uploads: {
+		directory: process.env.UPLOADS_DIRECTORY || "./uploads",
+	},
 } as const;
 
 if (!config.openai.apiKey) {

@@ -1,5 +1,7 @@
+import fs from "node:fs";
 import express from "express";
 import { config } from "./config.js";
+import { documentsRouter } from "./routes/document.js";
 import { initQdrantCollection } from "./services/qdrant.js";
 
 const app = express();
@@ -9,6 +11,13 @@ app.use(express.json());
 app.get("/health", (req, res) => {
 	res.send("OK");
 });
+
+app.use("/documents", documentsRouter);
+
+// ensure the uploads directory exists, create if it doesn't
+if (!fs.existsSync(config.uploads.directory)) {
+	fs.mkdirSync(config.uploads.directory);
+}
 
 async function start() {
 	try {
