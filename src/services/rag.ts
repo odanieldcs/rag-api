@@ -1,5 +1,6 @@
 import { StringOutputParser } from "@langchain/core/output_parsers";
 import { ChatPromptTemplate } from "@langchain/core/prompts";
+import type { Response } from "express";
 import type { QueryRequest, RAGResponse } from "../types.js";
 import { llm } from "./openai.js";
 import { searchDocuments } from "./query.js";
@@ -67,4 +68,59 @@ export async function queryRAG(query: QueryRequest): Promise<RAGResponse> {
 		answer,
 		sources,
 	};
+}
+
+export async function streamRAG(
+	query: QueryRequest,
+	res: Response,
+): Promise<void> {
+	const { question, topK = 3 } = query;
+	// Search relevant chunks
+	const searchResults = await searchDocuments({ question, topK });
+
+	if (searchResults.results.length === 0) {
+		res.write(
+			`data: ${JSON.stringify({
+				type: "answer",
+				content: "I did not find the information",
+			})}\n\n`,
+		);
+		res.write(`data: ${JSON.stringify({ type: "done" })}\n\n`);
+		res.end();
+		return;
+	}
+
+	const sources = searchResults.results.map((result) => ({
+		fileName: result.metadata.fileName,
+		chunkIndex: result.metadata.chunkIndex,
+		score: result.score,
+	}));
+
+	res.write(
+		`data: ${JSON.stringify({
+			type: "sources",
+			content: sources,
+		})}\n\n`,
+	);
+
+	// Combine chunks into context
+	const context = searchResults.results
+		.map((res, idx) => `[${idx + 1}]: ${res.text}`)
+		.join("\n\n");
+
+	// Create LLM chain
+	const chains = RAG_PROMPT_TEMPLATE.pipe(llm).pipe(new StringOutputParser());
+
+	// Stream answer
+	const stream = await chains.stream({
+		context,
+		question,
+	});
+
+	for await (const chunk of stream) {
+		res.write(`data: ${JSON.stringify({ type: "token", content: chunk })}\n\n`);
+	}
+
+	res.write(`data: ${JSON.stringify({ type: "done" })}\n\n`);
+	res.end();
 }

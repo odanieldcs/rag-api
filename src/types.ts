@@ -49,3 +49,10 @@ export interface RAGResponse {
 	}>;
 	tokensUsed?: number;
 }
+
+export type StreamEventType = "sources" | "token" | "done" | "error";
+
+export interface StreamEvent {
+	type: StreamEventType;
+	content?: any;
+}
