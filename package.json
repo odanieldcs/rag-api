@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "main": "index.js",
   "type": "module",
+  "engines": {
+    "node": "22.14",
+    "npm": "10.9.2"
+  },
   "scripts": {
     "dev": "tsx watch src/index.ts"
   },
@@ -18,7 +22,8 @@
     "express": "^5.1.0",
     "multer": "^2.0.2",
     "pdf-parse": "^1.1.1",
-    "uuid": "^13.0.0"
+    "uuid": "^13.0.0",
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@types/express": "^5.0.4",

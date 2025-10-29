@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import express from "express";
 import { config } from "./config.js";
+import { errorHandler } from "./middleware/errorHandler.js";
 import { documentsRouter } from "./routes/document.js";
 import { queryRouter } from "./routes/query.js";
 import { ragRouter } from "./routes/rag.js";
@@ -17,6 +18,7 @@ app.get("/health", (req, res) => {
 app.use("/documents", documentsRouter);
 app.use("/query", queryRouter);
 app.use("/rag", ragRouter);
+app.use(errorHandler);
 
 // ensure the uploads directory exists, create if it doesn't
 if (!fs.existsSync(config.uploads.directory)) {

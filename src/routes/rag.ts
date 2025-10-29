@@ -1,19 +1,13 @@
 import { Router } from "express";
+import { validateSchema } from "../middleware/validation.js";
+import { type QueryInput, querySchema } from "../schemas/index.js";
 import { queryRAG } from "../services/rag.js";
-import type { QueryRequest } from "../types.js";
 
 export const ragRouter = Router();
 
-ragRouter.post("/", async (req, res) => {
+ragRouter.post("/", validateSchema(querySchema), async (req, res) => {
 	try {
-		const { question, topK } = req.body as QueryRequest;
-
-		if (!question || typeof question !== "string" || question.trim() === "") {
-			return res.status(400).json({
-				success: false,
-				message: "Question is required",
-			});
-		}
+		const { question, topK } = req.body as QueryInput;
 		const result = await queryRAG({ question, topK });
 		res.json({
 			success: true,

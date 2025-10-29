@@ -1,21 +1,13 @@
 import { Router } from "express";
+import { validateSchema } from "../middleware/validation.js";
+import { type QueryInput, querySchema } from "../schemas/index.js";
 import { searchDocuments } from "../services/query.js";
-import type { QueryRequest } from "../types.js";
 
 export const queryRouter = Router();
 
-queryRouter.post("/", async (req, res) => {
+queryRouter.post("/", validateSchema(querySchema), async (req, res) => {
 	try {
-		const { question, topK } = req.body as QueryRequest;
-
-		if (!question || typeof question !== "string") {
-			return res.status(400).json({ error: "Invalid question parameter" });
-		}
-
-		if (question.trim().length === 0) {
-			return res.status(400).json({ error: "Question cannot be empty" });
-		}
-
+		const { question, topK } = req.body as QueryInput;
 		const result = await searchDocuments({ question, topK });
 
 		res.json(result);

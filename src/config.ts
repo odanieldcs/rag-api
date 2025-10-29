@@ -2,6 +2,8 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
+const MAX_FILE_SIZE_10MB = 10 * 1024 * 1024;
+
 export const config = {
 	openai: {
 		// biome-ignore lint/style/noNonNullAssertion: We ensure this variable is set below
@@ -16,6 +18,7 @@ export const config = {
 	},
 	uploads: {
 		directory: process.env.UPLOADS_DIRECTORY || "./uploads",
+		maxFileSize: Number(MAX_FILE_SIZE_10MB),
 	},
 } as const;
 
