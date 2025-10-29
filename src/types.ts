@@ -38,3 +38,14 @@ export interface QueryResponse {
 	results: SearchResponse[];
 	retrievedChunks: number;
 }
+
+export interface RAGResponse {
+	question: string;
+	answer: string;
+	sources: Array<{
+		fileName: string;
+		chunkIndex: number;
+		score: number;
+	}>;
+	tokensUsed?: number;
+}

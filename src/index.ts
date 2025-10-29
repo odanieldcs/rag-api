@@ -3,6 +3,7 @@ import express from "express";
 import { config } from "./config.js";
 import { documentsRouter } from "./routes/document.js";
 import { queryRouter } from "./routes/query.js";
+import { ragRouter } from "./routes/rag.js";
 import { initQdrantCollection } from "./services/qdrant.js";
 
 const app = express();
@@ -15,6 +16,7 @@ app.get("/health", (req, res) => {
 
 app.use("/documents", documentsRouter);
 app.use("/query", queryRouter);
+app.use("/rag", ragRouter);
 
 // ensure the uploads directory exists, create if it doesn't
 if (!fs.existsSync(config.uploads.directory)) {
