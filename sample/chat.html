@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>RAG Streaming</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 20px;
+    }
+    #question {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    #response {
+      margin-top: 20px;
+      padding: 20px;
+      background: #f5f5f5;
+      border-radius: 8px;
+      min-height: 100px;
+      white-space: pre-wrap;
+    }
+    #sources {
+      margin-top: 20px;
+      padding: 10px;
+      background: #e3f2fd;
+      border-radius: 4px;
+      font-size: 12px;
+    }
+    .loading {
+      color: #666;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+  <h1>RAG Streaming</h1>
+  
+  <input 
+    type="text" 
+    id="question" 
+    placeholder="Digite sua pergunta..."
+    value="Qual foi a receita da Nike em 2023?"
+  />
+  
+  <button onclick="startStream()">Enviar</button>
+  
+  <div id="response" class="loading">Resposta aparecerá aqui...</div>
+  <div id="sources"></div>
+
+  <script>
+    function startStream() {
+      const question = document.getElementById('question').value;
+      const responseDiv = document.getElementById('response');
+      const sourcesDiv = document.getElementById('sources');
+      
+      // Reset
+      responseDiv.textContent = '';
+      responseDiv.className = 'loading';
+      sourcesDiv.textContent = '';
+
+      // Criar EventSource
+      const eventSource = new EventSource(
+        `http://localhost:3000/rag/stream?question=${encodeURIComponent(question)}`
+      );
+
+      // SSE não suporta POST com corpo, então usamos fetch
+      fetch('http://localhost:3000/rag/stream', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ question }),
+      })
+      .then(response => {
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+
+        function read() {
+          reader.read().then(({ done, value }) => {
+            if (done) return;
+
+            const chunk = decoder.decode(value);
+            const lines = chunk.split('\n');
+
+            lines.forEach(line => {
+              if (line.startsWith('data: ')) {
+                const data = JSON.parse(line.substring(6));
+                
+                if (data.type === 'sources') {
+                  sourcesDiv.innerHTML = '<strong>Fontes:</strong><br>' + 
+                    data.content.map(s => 
+                      `${s.fileName} (chunk ${s.chunkIndex}, score: ${s.score.toFixed(2)})`
+                    ).join('<br>');
+                }
+                
+                if (data.type === 'token') {
+                  responseDiv.className = '';
+                  responseDiv.textContent += data.content;
+                }
+                
+                if (data.type === 'done') {
+                  console.log('Stream concluído');
+                }
+              }
+            });
+
+            read();
+          });
+        }
+
+        read();
+      })
+      .catch(error => {
+        responseDiv.textContent = 'Erro: ' + error.message;
+      });
+    }
+  </script>
+</body>
+</html>
