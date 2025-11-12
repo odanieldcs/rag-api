@@ -1,4 +1,5 @@
 import fs from "node:fs";
+import cors from "cors";
 import express from "express";
 import { config } from "./config.js";
 import { errorHandler } from "./middleware/errorHandler.js";
@@ -10,6 +11,11 @@ import { initQdrantCollection } from "./services/qdrant.js";
 const app = express();
 
 app.use(express.json());
+app.use(
+	cors({
+		origin: "*",
+	}),
+);
 
 app.get("/health", (req, res) => {
 	res.send("OK");
