@@ -4,8 +4,8 @@
   "main": "index.js",
   "type": "module",
   "engines": {
-    "node": "22.14",
-    "npm": "10.9.2"
+    "node": ">=26 <27",
+    "npm": ">=11"
   },
   "scripts": {
     "dev": "tsx watch src/index.ts"
@@ -17,7 +17,7 @@
   "dependencies": {
     "@langchain/community": "^1.0.0",
     "@langchain/core": "^1.0.1",
-    "@qdrant/js-client-rest": "^1.15.1",
+    "@qdrant/js-client-rest": "^1.20.0",
     "cors": "^2.8.5",
     "dotenv": "^16.6.1",
     "express": "^5.1.0",
@@ -30,10 +30,13 @@
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.4",
     "@types/multer": "^2.0.0",
-    "@types/node": "^24.9.1",
+    "@types/node": "^26.6.11",
     "@types/pdf-parse": "^1.1.5",
     "@types/uuid": "^10.0.0",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3"
+  },
+  "overrides": {
+    "undici": "^7.30.2"
   }
 }
