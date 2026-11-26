@@ -2,7 +2,6 @@ import fs from "node:fs/promises";
 import { Document } from "@langchain/core/documents";
 import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
 import { PDFParse } from "pdf-parse";
-import { v4 as uuidv4 } from "uuid";
 import { config } from "../config.js";
 import type { UploadResponse } from "../types.js";
 import { embeddings } from "./openai.js";
@@ -53,9 +52,9 @@ export async function processDocument(
 	}
 
 	// 3. Add metadata to each chunk
-	const documentId = uuidv4();
+	const documentId = crypto.randomUUID();
 	const documentChunks = chunks.map((chunk, index) => ({
-		id: uuidv4(),
+		id: crypto.randomUUID(),
 		text: chunk.pageContent,
 		metadata: {
 			documentId,
