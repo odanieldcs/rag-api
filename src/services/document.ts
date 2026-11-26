@@ -1,6 +1,7 @@
-import { PDFLoader } from "@langchain/community/document_loaders/fs/pdf";
+import fs from "node:fs/promises";
+import { Document } from "@langchain/core/documents";
 import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
-import { v4 as uuidv4 } from "uuid";
+import { PDFParse } from "pdf-parse";
 import { config } from "../config.js";
 import type { UploadResponse } from "../types.js";
 import { embeddings } from "./openai.js";
@@ -11,13 +12,33 @@ const textSplitter = new RecursiveCharacterTextSplitter({
 	chunkOverlap: 200,
 });
 
+// Load a PDF as one Document per non-empty page, keeping the page number in metadata.loc
+async function loadPdf(filePath: string): Promise<Document[]> {
+	const parser = new PDFParse({ data: await fs.readFile(filePath) });
+
+	try {
+		const { pages } = await parser.getText();
+
+		return pages
+			.filter((page) => page.text.trim().length > 0)
+			.map(
+				(page) =>
+					new Document({
+						pageContent: page.text,
+						metadata: { loc: { pageNumber: page.num } },
+					}),
+			);
+	} finally {
+		await parser.destroy();
+	}
+}
+
 export async function processDocument(
 	filePath: string,
 	fileName: string,
 ): Promise<UploadResponse> {
 	// 1. Load the document from the file
-	const loader = new PDFLoader(filePath);
-	const documents = await loader.load();
+	const documents = await loadPdf(filePath);
 
 	if (documents.length === 0) {
 		throw new Error("No documents found in the provided file.");
@@ -31,9 +52,9 @@ export async function processDocument(
 	}
 
 	// 3. Add metadata to each chunk
-	const documentId = uuidv4();
+	const documentId = crypto.randomUUID();
 	const documentChunks = chunks.map((chunk, index) => ({
-		id: uuidv4(),
+		id: crypto.randomUUID(),
 		text: chunk.pageContent,
 		metadata: {
 			documentId,
