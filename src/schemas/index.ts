@@ -9,9 +9,9 @@ export const querySchema = z.object({
 					? "Question is required"
 					: "Question must be a string",
 		})
+		.trim()
 		.min(1, "Question cannot be empty")
-		.max(500, "Question cannot exceed 500 characters")
-		.trim(),
+		.max(500, "Question cannot exceed 500 characters"),
 	topK: z
 		.number({
 			error: "topK must be a number",
