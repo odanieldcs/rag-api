@@ -17,7 +17,7 @@
   "dependencies": {
     "@langchain/community": "^1.0.0",
     "@langchain/core": "^1.0.1",
-    "@qdrant/js-client-rest": "^1.15.1",
+    "@qdrant/js-client-rest": "^1.20.0",
     "cors": "^2.8.5",
     "dotenv": "^16.6.1",
     "express": "^5.1.0",
@@ -35,5 +35,8 @@
     "@types/uuid": "^10.0.0",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3"
+  },
+  "overrides": {
+    "undici": "^7.30.2"
   }
 }

@@ -11,14 +11,14 @@ export async function searchDocuments({
 	const queryVector = await embeddings.embedQuery(question);
 
 	// Perform vector search in Qdrant
-	const searchResult = await qdrantClient.search(config.qdrant.collectionName, {
-		vector: queryVector,
+	const { points } = await qdrantClient.query(config.qdrant.collectionName, {
+		query: queryVector,
 		limit: topK,
 		with_payload: true,
 	});
 
 	// Map search results to the SearchResponse format
-	const results: SearchResponse[] = searchResult.map((result) => ({
+	const results: SearchResponse[] = points.map((result) => ({
 		id: result.id as string,
 		text: result.payload?.text as string,
 		score: result.score,
