@@ -11,7 +11,7 @@ export function validateSchema<T extends z.ZodTypeAny>(schema: T) {
 			next();
 		} catch (error) {
 			if (error instanceof z.ZodError) {
-				const messages = error.errors.map((err) => ({
+				const messages = error.issues.map((err) => ({
 					field: err.path.join("."),
 					message: err.message,
 				}));
@@ -37,7 +37,7 @@ export function validateFile(req: Request, res: Response, next: NextFunction) {
 		next();
 	} catch (error) {
 		if (error instanceof z.ZodError) {
-			const message = error.errors[0]?.message || "Arquivo inválido";
+			const message = error.issues[0]?.message || "Arquivo inválido";
 			throw new AppError(400, message);
 		}
 		next(error);

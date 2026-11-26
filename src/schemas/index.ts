@@ -4,15 +4,17 @@ import { config } from "../config.js";
 export const querySchema = z.object({
 	question: z
 		.string({
-			required_error: "Question is required",
-			invalid_type_error: "Question must be a string",
+			error: (issue) =>
+				issue.input === undefined
+					? "Question is required"
+					: "Question must be a string",
 		})
+		.trim()
 		.min(1, "Question cannot be empty")
-		.max(500, "Question cannot exceed 500 characters")
-		.trim(),
+		.max(500, "Question cannot exceed 500 characters"),
 	topK: z
 		.number({
-			invalid_type_error: "topK must be a number",
+			error: "topK must be a number",
 		})
 		.int("topK must be an integer")
 		.min(1, "topK must be at least 1")
@@ -23,7 +25,7 @@ export const querySchema = z.object({
 
 export const fileUploadSchema = z.object({
 	mimeType: z.literal("application/pdf", {
-		errorMap: () => ({ message: "Only PDF files are allowed" }),
+		error: "Only PDF files are allowed",
 	}),
 	size: z
 		.number()
