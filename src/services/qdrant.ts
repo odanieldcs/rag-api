@@ -3,6 +3,7 @@ import { config } from "../config.js";
 
 export const qdrantClient = new QdrantClient({
 	url: config.qdrant.url,
+	apiKey: config.qdrant.apiKey,
 });
 
 export async function initQdrantCollection() {
