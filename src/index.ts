@@ -35,7 +35,12 @@ async function start() {
 	try {
 		await initQdrantCollection();
 
-		app.listen(config.server.port, () => {
+		app.listen(config.server.port, (error) => {
+			if (error) {
+				console.error("✕ Error starting server:", error.message);
+				process.exit(1);
+			}
+
 			console.log(`✔︎ Server is running on port ${config.server.port}`);
 		});
 	} catch (error) {

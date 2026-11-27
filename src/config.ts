@@ -10,6 +10,8 @@ export const config = {
 		apiKey: process.env.OPENAI_API_KEY!,
 	},
 	qdrant: {
+		// biome-ignore lint/style/noNonNullAssertion: We ensure this variable is set below
+		apiKey: process.env.QDRANT_API_KEY!,
 		url: process.env.QDRANT_URL || "http://localhost:6333",
 		collectionName: process.env.QDRANT_COLLECTION_NAME || "documents",
 	},
@@ -24,4 +26,8 @@ export const config = {
 
 if (!config.openai.apiKey) {
 	throw new Error("OPENAI_API_KEY is not set in environment variables");
+}
+
+if (!config.qdrant.apiKey) {
+	throw new Error("QDRANT_API_KEY is not set in environment variables");
 }
